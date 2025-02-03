@@ -41,3 +41,10 @@ print("Hello World.")
 
 ```
 
+```{r}
+
+# This is a comment inside of a codeblock. Comments doesn't run when we run the codeblock.
+# Adding this command is a good way to start your class reference notebook.
+
+```
+
