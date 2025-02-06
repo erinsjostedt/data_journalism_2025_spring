@@ -48,3 +48,10 @@ print("Hello World.")
 
 ```
 
+## read/load data
+```{r}
+NAME(no hyphens) <- read_rds("data/NAME.rds")
+```
+
+```{r}
+NAME(no hyphens) <- read_csv("data/NAME.csv")

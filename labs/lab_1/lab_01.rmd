@@ -1,0 +1,195 @@
+---
+title: "lab_01"
+author: "Ryan Little"
+date: "2025-02-01"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Turn off scientific notation
+options(scipen=999)
+```
+
+## About this lab
+
+To complete this lab, you need to: \* run existing code as directed (look for **Task**). \* modify existing code as directed (look for **Task**). \* write code in empty codeblocks provided to answer questions included (look for **Q**). \* write out the answer in the form of a complete sentence in the space given (look for **A**). When you are finished, commit changes and push to your personal GitHub repo, then submit the URL to this document on ELMS.
+
+Remember to add any new verbs or concepts to your reference notebook!
+
+## Load libraries and establish settings
+
+**Task** Import the Tidyverse. Write the code needed to load the library. To run the codeblock, hit the little green play button in the upper right corner of the gray area (the codeblock) below.
+
+```{r}
+
+install.packages(tidyverse)
+library(tidyverse)
+
+```
+
+## Load Data
+
+In this lab, we will be recreating the first data story I ever did as a data journalism student at Merrill while working in the Howard Center for Investigative Journalism. First, we need to import the court charges data from Okaloosa County, Florida.
+
+**Task** Using the example from the pre_lab, write code to load the CSV file in the data file and assign it to a good variable name. This data is only charges for homeless people.
+
+```{r}
+
+okaloosa_court_charges <- read_csv("data/okaloosa-court-charges.csv")
+
+```
+```{r}
+
+glimpse(okaloosa_court_charges)
+
+```
+
+
+## Examine the data
+
+**Task** Run the codeblock below to use glimpse to get a sense of the column names, types and sample data.
+
+**Q1** How many rows and columns does this dataframe have?
+
+**The dataframe has 15386 rows and 56 columns.**
+
+
+```{r}
+
+glimpse(okaloosa_court_charges)
+
+```
+
+
+## Answer questions
+
+**Q2** Which charges are homeless people most often charged with?
+
+**They were most often charged with narcotic equip possess or use.**
+
+```{r}
+
+okaloosa_court_charges |>
+  group_by(arrest_statute) |>
+  summarise(
+    charges = n()
+  ) |>
+  arrange(desc(charges))
+
+```
+
+**Q3** What charges against homeless people have been charged the least?
+
+```{r}
+
+okaloosa_court_charges |>
+  group_by(arrest_statute) |>
+  summarise(
+    charges = n()
+  ) |>
+  arrange(charges)
+
+```
+
+**Q4** Why do you think there are so many charges identified in **A3** that are tied for the least common? Hint: You can't answer this question with code.
+
+**I might be wrong, but I think part of why these charges are all tied is because some of them are variations of very similar charges. Even if the charges are similar, slight differences create unique categories for each charge.**
+
+**Q5** Which prosecutor has prosecuted the most charges against homeless people? Is the top prosecutor related to any famous Floridians?
+
+**A5**
+
+```{r}
+
+```
+
+
+**Q6** Which judge has overseen the most cases involving homeless people? Hint: Cases and charges are not the same thing.
+
+**A6**
+
+## 1: get total number of charges
+
+```{r}
+
+okaloosa_court_charges |>
+  summarise(
+    count_arrest_charge = n()
+  )
+
+```
+
+## 2: Make the total number of charges a distinct value
+
+```{r}
+
+charges = 15386
+
+```
+
+## 3: Using the total number of charges, use `distict` to distinguish unique instances of judges and case numbers in order to remove repeats. This can be done in the main functions (A) or in summarize (B). **THE SUMMARISE ONE IS EASIER.** Group by judge, and summarise by cases. Arrange in descending order by number of cases.
+
+```{r}
+
+charges |>
+  distinct(judge, case_number)
+  group_by(judge) |>
+  summarise(
+    cases = n()
+  ) |>
+  arrange(desc(cases))
+
+```
+
+##OR
+
+```{r}
+charges |>
+  group_by(judge) |>
+  summarise(
+    cases = n_distinct(case_number)
+  ) |>
+  arrange(desc(cases))
+
+```
+
+
+**Q7** What prosecutor has prosecuted the most cases against a single homeless person?
+
+**A7**
+
+```{r}
+
+okaloosa_court_charges |>
+  group_by(prosecutor, defendant) |>
+  summarise(
+    cases = n_distinct(case_number)
+  ) |>
+  arrange(desc(cases))
+
+```
+
+**Q8** We need to create a dataframe that will help us when we are reporting on the ground. Building off our work so far, we need a dataframe that includes the name of every homeless person who was charged with a crime and some important counts about their interactions with the criminal justice system. Create a dataframe that includes the name of each homeless person, the number of charges they have faced, the number of cases they have been involved in, how many dollars they have been assessed in fines, the average fine imposed on them and the median fine imposed upon them. Then sort the data frame so the person with the most charges is at the top. 
+
+**Athenia C. Singleton has the higest number of prosecutions against a single defendant with 25 prosecutions against Gary Lee Hudson.**
+
+```{r}
+
+okaloosa_court_charges |>
+  group_by(defendant) |>
+  summarise(
+    count_arrest_charge = n(),
+    count_uniform_case_number = n(),
+    cases = n_distinct(case_number),
+    total_assessed = sum(total_assessed),
+    mean_fine = mean(total_assessed),
+    median_fine = median(total_assessed)
+  ) |>
+  arrange(desc(count_arrest_charge))
+
+```
+
+**Q9** Please describe a short reporting plan for how you would use the data you have generated in **A8** to report on the criminal justice system in Okaloosa County, Florida. Who are the people we should talk to? What more should we do with our data analysis to be certain we know what the story is?
+
+**I would want to talk to Richard Scott Chancey because he has the largest number of arrests, as well as other people who have a high number of arrests. I would want to know why he was arrested so many times, what the fines are, if he has paid the fines, how many arrests have led to a charge, if its left a mark on his criminal history, and how he feels about the criminal justice system in Okaloosa County.. If possible, I would want to focus on how the rampant criminalization of homeless people may make it harder for them to get a job and/or attain housing due to criminal records and high dines.**
