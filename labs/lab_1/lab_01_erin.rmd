@@ -146,3 +146,4 @@ charges_homeless |>
 **Q9** Please describe a short reporting plan for how you would use the data you have generated in **A8** to report on the criminal justice system in Okaloosa County, Florida. Who are the people we should talk to? What more should we do with our data analysis to be certain we know what the story is?
 
 **A9**
+I would use the data I generated in A8 to find the homeless people who are near the top of this dataframe. I would attempt to contact the prosecutors who have worked on the cases for these top individuals. With our data analysis I would like to see them sorted by age as well, and find out how many of these arrests and charges were ethically made. 
