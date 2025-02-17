@@ -50,8 +50,47 @@ print("Hello World.")
 
 ## read/load data
 ```{r}
+
 NAME(no hyphens) <- read_rds("data/NAME.rds")
+
 ```
 
 ```{r}
+
 NAME(no hyphens) <- read_csv("data/NAME.csv")
+
+```
+
+#preland 2
+```{r}
+
+#lubridate: a system that makes it to R Studio can read, extract, and work with dates and time data better.
+
+# head(DATASETNAME): simplifies the presentation of the dataset.
+
+# summary(DATASETNAME): provides a table summarizing the overall dataset.
+
+# colnames(DATASETNAME):displays the column names.
+
+#glimpse(DATASETNAME): provides an overall glimpse of the data (columns, rows and what data exists in those categories.)
+
+
+```
+
+
+#better ordering
+```{r}
+
+#creates a new column/variable with `mutate` by using preexisting data, showing the percentage of votes made per candidate on election day. Then arranges the data by the percent_election_day variable.
+
+primary_24 |>
+  select(office_name, office_district, candidate_name, party, county_name, election_day, votes) |>
+  mutate(
+  percent_election_day = (election_day/votes)*100
+)  |> 
+  arrange(desc(percent_election_day))
+
+```
+
+```
+
