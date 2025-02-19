@@ -98,16 +98,22 @@ okaloosa_court_charges |>
 
 **Q5** Which prosecutor has prosecuted the most charges against homeless people? Is the top prosecutor related to any famous Floridians?
 
-**A5**
+**Ginger Bowden Madden**
 
 ```{r}
 
+okaloosa_court_charges |>
+  group_by(prosecutor) |>
+  summarise(
+    charges = n()
+  ) |>
+  arrange(desc(charges))
 ```
 
 
 **Q6** Which judge has overseen the most cases involving homeless people? Hint: Cases and charges are not the same thing.
 
-**A6**
+**Patricia S. Grinsted.**
 
 ## 1: get total number of charges
 
@@ -132,12 +138,13 @@ charges = 15386
 
 ```{r}
 
-charges |>
-  distinct(judge, case_number)
+okaloosa_court_charges |>
   group_by(judge) |>
+  distinct(judge, case_number) |>
   summarise(
     cases = n()
   ) |>
+  
   arrange(desc(cases))
 
 ```
@@ -145,7 +152,7 @@ charges |>
 ##OR
 
 ```{r}
-charges |>
+okaloosa_court_charges |>
   group_by(judge) |>
   summarise(
     cases = n_distinct(case_number)
@@ -157,7 +164,7 @@ charges |>
 
 **Q7** What prosecutor has prosecuted the most cases against a single homeless person?
 
-**A7**
+**Kelliann Marie Clark.**
 
 ```{r}
 
@@ -172,7 +179,7 @@ okaloosa_court_charges |>
 
 **Q8** We need to create a dataframe that will help us when we are reporting on the ground. Building off our work so far, we need a dataframe that includes the name of every homeless person who was charged with a crime and some important counts about their interactions with the criminal justice system. Create a dataframe that includes the name of each homeless person, the number of charges they have faced, the number of cases they have been involved in, how many dollars they have been assessed in fines, the average fine imposed on them and the median fine imposed upon them. Then sort the data frame so the person with the most charges is at the top. 
 
-**Athenia C. Singleton has the higest number of prosecutions against a single defendant with 25 prosecutions against Gary Lee Hudson.**
+**Athenia C. Singleton has the highest number of prosecutions against a single defendant with 25 prosecutions against Gary Lee Hudson.**
 
 ```{r}
 
