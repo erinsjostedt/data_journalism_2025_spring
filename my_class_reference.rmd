@@ -48,12 +48,14 @@ print("Hello World.")
 
 ```
 
-## read/load data
+## read/load data - command changes slightly based on file type
 ```{r}
 
 NAME(no hyphens) <- read_rds("data/NAME.rds")
 
 ```
+
+# "data/NAME.rds" = file path
 
 ```{r}
 
@@ -74,6 +76,14 @@ NAME(no hyphens) <- read_csv("data/NAME.csv")
 
 #glimpse(DATASETNAME): provides an overall glimpse of the data (columns, rows and what data exists in those categories.)
 
+
+```
+
+
+# n(), the counting 
+```{r}
+
+n()
 
 ```
 
