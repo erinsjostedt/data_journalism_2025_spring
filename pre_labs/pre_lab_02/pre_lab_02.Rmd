@@ -344,4 +344,4 @@ So the month of June 2022 had the most expenditures by far in this data. We'll b
 
 Describe the values in the new `month` column - what do you think the data is showing here?
 
-**I think the calues in the `month` column are showing the total amount of expenses from each month, organized by descending amount.**
+**I think the values in the `month` column are showing the total amount of expenses from each month, organized by descending amount.**
