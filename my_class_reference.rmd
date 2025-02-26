@@ -102,5 +102,81 @@ primary_24 |>
 
 ```
 
+
+#prelab 3 - mutates the <chr> data into <dbl> so that it is read as numvers, not as characters
+```{r}
+
+```{r}
+texas_precinct_20 <- texas_precinct_20 |>
+  mutate(election_day = case_when(
+    election_day == '5+' ~ '49',
+    .default = election_day
+  ))
+
+texas_precinct_20 <- texas_precinct_20 |> mutate(election_day = as.numeric(election_day))
+
+glimpse(texas_precinct_20)
+```
+
+#clean names - makes all names in a data set use the same format
+```{r}
+# cleaning function
+cleaned_conowingo <- conowingo |>
+  clean_names()
+
+# display the cleaned dataset
+cleaned_conowingo
+```
+
+#cleans data set, and then renames the specified column
+```{r}
+cleaned_conowingo <- conowingo |>
+  clean_names() |> 
+  rename(linenumber = x1_linenumber)
+
+# display the cleaned dataset
+cleaned_conowingo
+```
+
+#find duplicate rows
+```{r}
+
+cleaned_conowingo |> 
+  get_dupes()
+
+```
+
+#remove duplicate rows
+```{r}
+
+# cleaning function
+cleaned_conowingo <- conowingo |>
+  clean_names() |> 
+  rename(linenumber = x1_linenumber) |> 
+  mutate(amount = as.numeric(amount)) |> 
+  distinct()
+  
+
+# display the cleaned dataset
+cleaned_conowingo
+
+```
+
+#cleans names, renames a column, transforms "amount" into the <dbl> data type, looks for distinct instances, mutates zip codes into their first 5 digits, and mutates all variables in the "city" column to display in title case.
+
+```{r}
+# cleaning function
+cleaned_conowingo <- conowingo |>
+  clean_names() |> 
+  rename(linenumber = x1_linenumber) |> 
+  mutate(amount = as.numeric(amount)) |> 
+  distinct() |>
+  mutate(zip = str_sub(zip, start=1L, end=5L)) |>
+  mutate(city = str_to_title(city))
+  
+
+# display the cleaned dataset
+cleaned_conowingo
+
 ```
 
