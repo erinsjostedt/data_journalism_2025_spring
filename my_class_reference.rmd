@@ -180,3 +180,48 @@ cleaned_conowingo
 
 ```
 
+##casewhen: assign a column to multiple rows based on variables. basically makes a list (c) of which preexisting variables to assign a new column's variable to
+```{r}
+DATASET |>
+  mutate(
+    region = case_when(
+      COLUMN %in% c("Variable1", "Var2", "Var 3") ~ "New Assigned Column"
+    )
+  )
+```
+
+
+##rename one variable without nuking the rest of them
+```{r}
+
+DATASET |>
+  mutate(
+    COLUMNNAME = case_when(
+      COLUMNNAME == "variable" ~ "newVariableName",
+      TRUE ~ COLUMNNAME
+      ##^ "TRUE ~ COLUMNNAME" is what keeps the other variables in the column from getting nuked
+      )
+    ) 
+```
+
+
+##make all column names lowercase w/ underscores instead of spaces using library janitor
+```{r}
+
+library(janitor)
+
+md_voters_2024 |>
+  clean_names()
+
+#etc etc etc. you can do this right when you import data
+
+```
+
+##remove junk columns
+```{r}
+
+select(-c(COL1, COL2, COL3, ETC))
+
+```
+
+
