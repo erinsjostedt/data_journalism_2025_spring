@@ -19,6 +19,7 @@ options(scipen=999)
 # install.packages('tidyverse')
 library(tidyverse)
 library(lubridate)
+
 ```
 
 ## Load Data
@@ -26,7 +27,7 @@ library(lubridate)
 For this lab we'll be working with a slice of Maryland voter registration data: records of people who have registration dates this year through Aug. 7. Let's load it.
 
 ```{r}
-md_voters_2024 <- read_rds("data/lab_02.rds")
+md_voters_2024 <- read_rds("lab_02.rds")
 ```
 
 ## Examine Data
@@ -37,32 +38,102 @@ Take a look at the data, getting familiar with what it contains. Most of the col
 
 **Q1** How many voters appear to be *new* registrants since July 21, when President Joe Biden announced he would leave the race, based on the information above? Create a dataframe to hold the only those voters. Which counties have seen the most? Take a look at county population figures here and compare the two in your answer: https://worldpopulationreview.com/us-counties/maryland.
 
-**A1**
+**17206**
 
 ```{r}
+library(dplyr)
+
+md_voters_2024 <- md_voters_2024 %>%
+  mutate(COUNTY_REGISTRATION_DATE = as.Date(COUNTY_REGISTRATION_DATE, format = "%Y-%m-%d"))
+
+new_voters <- md_voters_2024 %>%
+  filter(COUNTY_REGISTRATION_DATE > as.Date("2024-07-21"))
+
+nrow(new_voters)
 ```
 
 **Q2** A better question is whether the new voters you found in Q1 are an outlier compared to other weeks this year. Using the original dataframe with 2024 registrants, use `mutate()` and lubridate to produce week numbers from the COUNTY_REGISTRATION_DATE (Lubridate has a function that turns a date into a week number. Use that to answer this question). Save that to the original dataframe. Then calculate how many voters are in each week. Describe the distribution of voters groups in a sentence - are the weeks from July 21-August 7 different from the rest, and if so, how?
 
-**A2**
+**From July 21-Aug 7, voters groups decreased from around 7,000 to around 3,000. (I used an AI assistant to help with some of the code here)**
 
 ```{r}
+md_voters_2024 <- md_voters_2024 %>%
+  mutate(week_number = week(COUNTY_REGISTRATION_DATE))
+voters_by_week <- md_voters_2024 %>%
+  group_by(week_number) %>%
+  summarise(voter_count = n())
+weeks_of_interest <- voters_by_week %>%
+  filter(week_number %in% c(30, 31))
+# Get the overall distribution of registrations by week
+voter_distribution <- ggplot(voters_by_week, aes(x = week_number, y = voter_count)) +
+  geom_bar(stat = "identity", fill = "lightblue") +
+  theme_minimal() +
+  labs(title = "Voter Registrations by Week", x = "Week Number", y = "Number of Voters")
+
+print(voter_distribution)
+
 ```
 
 **Q3** Using lubridate, show which month saw the largest number of registrations. Does the answer help shed more light on Q2?
-**A3** 
+**July has the most voter registrations. This does shed more light becasue there cannot be more after that point, so the decrease makes sense!** 
 
 ```{r}
 
+df <- read.csv("lab_02.rds", stringsAsFactors = FALSE)
+df$STATE_REGISTRATION_DATE <- as.Date(df$STATE_REGISTRATION_DATE, format="%Y-%m-%d")
+df$Registration_Month <- month(df$STATE_REGISTRATION_DATE, label = TRUE)
+most_common_month <- names(which.max(table(df$Registration_Month)))
 ```
 
 **Q4** Maryland has, officially, five regions: https://www.visitmaryland.org/article/maryland-regions. Modify the original dataframe again to add a `region` column based on the `COUNTY` value using case_when. Are you going to have to do this for every Maryland county plus Baltimore City? Yes, you are. Which regions and parties account for the most new voters?
 
-**A4** 
+**Capital Region Democrats account for the most new voters.** 
 
 ```{r}
+library(dplyr)
+
+df <- read.csv("lab_02.rds", stringsAsFactors = FALSE)
+
+df$STATE_REGISTRATION_DATE <- as.Date(df$STATE_REGISTRATION_DATE, format="%Y-%m-%d")
+
+df <- df %>%
+  mutate(region = case_when(
+    COUNTY %in% c("Allegany", "Garrett", "Washington") ~ "Western Maryland",
+    COUNTY %in% c("Montgomery", "Frederick", "Prince George's") ~ "Capital Region",
+    COUNTY %in% c("Baltimore", "Baltimore City", "Carroll", "Harford", "Howard", "Anne Arundel") ~ "Central Maryland",
+    COUNTY %in% c("Calvert", "Charles", "St. Mary's") ~ "Southern Maryland",
+    COUNTY %in% c("Caroline", "Cecil", "Dorchester", "Kent", "Queen Anne's", "Somerset", "Talbot", "Wicomico", "Worcester") ~ "Eastern Shore",
+    TRUE ~ "Unknown"
+  ))
+
+df$Registration_Month <- month(df$STATE_REGISTRATION_DATE, label = TRUE)
+
+region_counts <- df %>%
+  group_by(region) %>%
+  summarise(new_voters = n()) %>%
+  arrange(desc(new_voters))
+
+print("New Voters by Region:")
+print(region_counts)
+
+party_counts <- df %>%
+  group_by(PARTY) %>%
+  summarise(new_voters = n()) %>%
+  arrange(desc(new_voters))
+
+print("New Voters by Party:")
+print(party_counts)
+
+region_party_counts <- df %>%
+  group_by(region, PARTY) %>%
+  summarise(new_voters = n()) %>%
+  arrange(region, desc(new_voters))
+
+print("Most Common Party in Each Region:")
+print(region_party_counts)
+
 ```
 
 **Q5** What's an additional question you could ask of this data?
 
-**A5** 
+**You could ask which age group is registering to vote the most commonly.** 
