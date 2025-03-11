@@ -54,7 +54,6 @@ selected_md_voters_24 |>
 
 selected_md_voters_24 <- md_voters_2024 |> select(FIRSTNAME, LASTNAME, STATE_REGISTRATION_DATE, COUNTY_REGISTRATION_DATE, COUNTY)
 
-
 selected_md_voters_24 |>
   filter(STATE_REGISTRATION_DATE >= "2024-07-21" & COUNTY_REGISTRATION_DATE >= "2024-07-21" & STATE_REGISTRATION_DATE == COUNTY_REGISTRATION_DATE) |>
   group_by(COUNTY) |>
