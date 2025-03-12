@@ -224,4 +224,9 @@ select(-c(COL1, COL2, COL3, ETC))
 
 ```
 
-
+#combine different data sets
+```{r}
+# bind_rows with list
+NEW_DATASET_NAME <- bind_rows(list(DS1, DS2, DS3, DS4, DS5))
+View(NEW_DATASET_NAME)
+```
