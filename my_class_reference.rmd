@@ -103,7 +103,7 @@ primary_24 |>
 ```
 
 
-#prelab 3 - mutates the <chr> data into <dbl> so that it is read as numvers, not as characters
+#prelab 3 - mutates the <chr> data into <dbl> so that it is read as numbers, not as characters
 ```{r}
 
 ```{r}
@@ -113,7 +113,8 @@ texas_precinct_20 <- texas_precinct_20 |>
     .default = election_day
   ))
 
-texas_precinct_20 <- texas_precinct_20 |> mutate(election_day = as.numeric(election_day))
+texas_precinct_20 <- texas_precinct_20 |>
+  mutate(election_day = as.numeric(election_day))
 
 glimpse(texas_precinct_20)
 ```
