@@ -95,6 +95,8 @@ donors <- donors |>
     name_clean = "name-clean"
   )
 
+glimpse(donors)
+
 ```
 
 ```{r}
@@ -114,29 +116,56 @@ donors |>
 
 ### Sentence 2
 
-* **Sentence text**: This year's legislative session also saw significant donations from hog farmers and beer distributors, both industries with important legislation before the General Assembly. Senate President Pro Tem Phil Berger's campaign alone raised nearly $222,000 during session. Twenty-three people gave him the maximum allowed: $5,200.
+* **Sentence text**: Senate President Pro Tem Phil Berger's campaign alone raised nearly $222,000 during session. Twenty-three people gave him the maximum allowed: $5,200.
 
-* **Analysis summary**: [Write up two to three sentences describing the results of your analysis.  Were you able to confirm the finding? If not, why not?]
+* **Analysis summary**: We were able to reverse engineer data and confirm the finding, but we had to figure out which specific session they were talking about. The 2018 North Carolina short session ran from May 26 to June 29. We filtered by this date, then filtered by donations made to Philip E Berger's committee that were the maximum allowed amount. We then grouped by name and summarized by the sum of the amounts donated. Our final result was 23 distinct rows, which confirmed that 23 people donated the maximum amount to his committee during the NC session.
 
 ```{r}
-# Put code to reverse engineer sentence here
 
-# Display results of code below this codeblock
+donors |>
+  filter(date >= '2018-05-16' & date <= '2018-06-29') |>
+  filter(committee_name == "PHILIP E BERGER COMM") |>
+  filter(amount == 5200) |>
+  group_by(name_clean) |>
+  summarise(sum = sum(amount)) |>
+  arrange(desc(sum))
 
 ```
+
 
 ### Sentence 3
 
-* **Sentence text**: All told during the six-week General Assembly session, more than $1.1 million flowed into state legislators' campaign accounts. That's a conservative figure, reached by backing out money that simply flowed from one politician's campaign to another and money elected officials put into their own campaigns.
+* **Sentence text**: Beer distributors also gave during session. Mark Craig, the president of distributor R.H. Barringer, put more than $30,000 into state legislative campaigns during the six-week period, including the maximum $5,200 to Berger. 
 
-* **Analysis summary**: [Write up two to three sentences describing the results of your analysis.  Were you able to confirm the finding? If not, why not?]
+* **Analysis summary**: We were able to confirm the findings by first filtering by the dates of the session, which were May 26th to June 29th. We then filtered for donations by Mark R Craig that were equal to $5,200 and went to Berger's committee. This showed that Craig did make a single maximum $5,200 donation to Berger's committee.
+
+For the second part of the sentence, we simply filtered for donations made by Mark R Craig during the dates the session took place during. We then used summarize to get the total sum of his donations. We found that he donated a total of $33,200 during the session, which matched what the article said.
 
 ```{r}
-# Put code to reverse engineer sentence here
+#vv code for showing Craig made the a maximum donation amount to Berger.
 
-# Display results of code below this codeblock
+markcraig <- donors |>
+  filter(date >= '2018-05-16' & date <= '2018-06-29') |>
+  filter(name_clean == "MARK R CRAIG") |>
+  filter(amount == 5200) |>
+  group_by(name_clean, date, amount, committee_name) |>
+  summarise(sum(amount))
+
+head(markcraig)
 
 ```
+```{r}
+##vv code showing how much CRaig contributed during the NC General Assembly ($33,000+) 
+
+donors |>
+  filter(name_clean == "MARK R CRAIG") |>
+  group_by(name_clean) |>
+  summarise(
+    total = sum(amount, na.rm = TRUE) 
+  )
+
+```
+
 
 ### Sentence 4
 
