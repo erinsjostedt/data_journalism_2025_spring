@@ -171,10 +171,18 @@ donors |>
 
 * **Sentence text**: Add in donations to the two main political parties and to a handful of other large fundraising vehicles for state legislative races, and the in-session giving topped $3.4 million. Gov. Roy Cooper's main campaign account brought in another $407,000 during session.
 
-* **Analysis summary**: [Write up two to three sentences describing the results of your analysis.  Were you able to confirm the finding? If not, why not?]
+* **Analysis summary**: We can't confirm this sentence because we cannot find a specific committee associated with Governor Roy Cooper, nor one associated with his campaign's main account. We also did not find any total donations during the session that equaled $407,000.
 
 ```{r}
 # Put code to reverse engineer sentence here
+
+donors |>
+  filter(date >= '2018-05-16' & date <= '2018-06-29') |>
+  group_by(committee_name) |>
+  summarise(total = sum(amount)) |>
+  arrange(desc(total))
+  
+## We can't confirm this sentence because we cannot find a specific committee associated with Governor Roy Cooper, nor one associated with his campaign's main account. We also did not find any total donations during the session that equaled 407,000.
 
 # Display results of code below this codeblock
 
@@ -184,13 +192,34 @@ donors |>
 
 * **Sentence text**: “A WRAL News analysis of campaign finance filings also turned up $16,000 in donations to legislative campaigns during session from 15 PACs with a lobbyist. Each would appear to be a violation of state fundraising rules, but spokespeople for most of the PACs, or the companies they represent, said there was a simple explanation: The checks were written before session.”
 
-* **Analysis summary**: [Write up two to three sentences describing the results of your analysis.  Were you able to confirm the finding? If not, why not?]
+* **Analysis summary**: We were not able to confirm the sentence for multiple reasons. After checking our organization names against a list of PAC organizations, we were able to narrow down PAC organizations donated during session. However, the total amount donated is much greater than the amount listed in the article, which claimed 15 PAC organizations donated "up to $16,000."
 
 ```{r}
 # Put code to reverse engineer sentence here
 
+pacdonations <- donors |>
+  filter(date >= '2018-05-16' & date <= '2018-06-29') |>
+  filter(str_detect(name_clean, "PAC"))
+
+pacdonations
+
 # Display results of code below this codeblock
 
 ```
+
+```{r}
+
+pactotal <- pacdonations |>
+  filter(date >= '2018-05-16' & date <= '2018-06-29') |>
+  filter(name_clean == "NORTH CAROLINA BEER & WINE WHOLESALERS ASSOC PAC" | name_clean == "NC OUTDOOR ADVERTISING ASSOC PAC" | name_clean == "NC CHIROPRACTIC ASSOC PAC" | name_clean == "NC STATE OPTOMETRIC SOCIETY PAC" | name_clean == "NC FIRE PAC" | name_clean == "NC ADCOVATES FOR JUSTICE PAC" | name_clean == "NC PORK COUNCIL PAC" | name_clean == "NC POULTRY FEDERATION PAC" | name_clean == "NC POULTRY FEDERATION PAC" | name_clean == "SMITHFIELD FOODS PAC" | name_clean == "WALMART STORES PAC" | name_clean == "WARD AND SMITH PAC" | name_clean == "REMY KEMP & ASSOCIATES PAC" | name_clean == "BB&T PAC" | name_clean == "AT&T PAC" | name_clean == "NATIONWIDE CAROLINA PAC")
+
+pactotal |>
+  group_by(name_clean) |>
+  summarise(
+    total_amount = sum(amount)
+  ) |>
+  arrange(desc(total_amount))
+```
+
 
 -30-

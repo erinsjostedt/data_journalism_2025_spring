@@ -88,9 +88,11 @@ As you can see, we have a GEOID, NAME, then variable and value. Variable and val
 **Task** Run the following codeblock to rename the population total columns in each dataframe:
 
 ```{r}
-p10 |> select(GEOID, NAME, value) |> rename(Population2010=value) -> p10
+p10 |> select(GEOID, NAME, value) |>
+  rename(Population2010=value) -> p10
 
-p00 |> select(GEOID, NAME, value) |> rename(Population2000=value) -> p00
+p00 |> select(GEOID, NAME, value) |>
+  rename(Population2000=value) -> p00
 ```
 
 Now we join the data together.
@@ -98,7 +100,8 @@ Now we join the data together.
 **Task** Run the following codeblock to combine the two dataframes into a single variable called `alldata`:
 
 ```{r}
-alldata <- p00 |> inner_join(p10)
+alldata <- p00 |>
+  inner_join(p10)
 ```
 
 And now we calculate the percent change.
@@ -137,7 +140,8 @@ md <- get_acs(geography = "county",
               state = "MD",
               year = 2022)
 
-md <- md |> arrange(desc(estimate)) |> top_n(20, estimate)
+md <- md |> arrange(desc(estimate)) |>
+  top_n(20, estimate)
 
 md
 ```

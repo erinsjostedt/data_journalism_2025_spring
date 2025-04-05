@@ -185,8 +185,8 @@ cleaned_conowingo
 ```{r}
 DATASET |>
   mutate(
-    region = case_when(
-      COLUMN %in% c("Variable1", "Var2", "Var 3") ~ "New Assigned Column"
+    NEWCOLUMN = case_when(
+      REFERENCEDCOLUMN %in% c("Variable1", "Var2", "Var 3") ~ "New Assigned Column"
     )
   )
 ```
