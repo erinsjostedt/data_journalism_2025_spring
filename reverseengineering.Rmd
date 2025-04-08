@@ -1,0 +1,128 @@
+---
+title: "Reverse Engineering Project "
+output: html_notebook
+---
+```{r}
+library(tidyverse)
+library(lubridate)
+```
+
+```{r}
+congress_ages<- read.csv("data_aging_congress.csv")
+
+glimpse(congress_ages)
+```
+1: "Don’t expect such unfamiliarity to change anytime soon: As it turns out, Congress today is older than it’s ever been. Across all senators and representatives, the median age of the 118th Congress is 59 years old. The median senator is 65 years old, a record high; the median representative is about 58, for the fourth Congress in a row.1 Congress has notably aged since 2001: From 1919 to 1999, the median senator never eclipsed 60 years old and the median representative never surpassed 55." 
+
+**The 118th Congress is the oldest in U.S. history, with a median age of 59.1 years across both chambers. Senators are the oldest they've ever been, with a median age of 65.3, while House members have a median age of 57.8—roughly the same as in the last several Congresses. These numbers back up the claim that Congress has aged significantly, particularly since the early 2000s, and confirm that the age gap between lawmakers and the general population remains wide.**
+```{r}
+congress_ages |>
+  summarize(median_age = median(age_years, na.rm=TRUE))
+```
+```{r}
+congress_ages |>
+  filter(chamber == "Senate") |>
+  summarize(median_senate_age= median(age_years, na.rm=TRUE))
+```
+```{r}
+congress_ages |>
+  filter(chamber == "House") |>
+  summarize(median_senate_age= median(age_years, na.rm=TRUE))
+```
+"Forty-eight percent of the current Congress is made up of boomers, even though they only represented about 21 percent of the population in the most recent census. And this actually represents a decline in representation for boomers, who made up 63 percent of Congress in the mid-2010s."
+
+**In the 118th Congress, baby boomers make up approximately 48.3% of all members, despite representing only about 21% of the U.S. population in the most recent census. This marks a notable decline from the 113th Congress (2013–2015), when boomers accounted for a peak of 63.1% of congressional representation. While they continue to wield disproportionate influence relative to their population size, their dominance is gradually receding as younger generations—particularly Gen X and millennials—begin to gain seats in Congress.**
+
+```{r}
+current_boomers <- congress_ages |>
+  filter(congress=="118") |>
+  group_by(congress, generation) |>
+  summarize (
+    total = n(),
+    boomers = sum(generation == "Boomers"), 
+    .groups = "drop") |>
+  mutate(
+    total_all_generations = sum(total),
+    percent_boomers = ((boomers / total_all_generations) * 100)) |>
+print(current_boomers)
+```
+
+```{r}
+current_boomers <- congress_ages |>
+  filter(congress=="113") |>
+  group_by(congress, generation) |>
+  summarize (
+    total = n(),
+    boomers = sum(generation == "Boomers"), 
+    .groups = "drop") |>
+  mutate(
+    total_all_generations = sum(total),
+    percent_boomers = ((boomers / total_all_generations) * 100)) |>
+print(current_boomers)
+```
+“But on top of the baby boomers’ outsized congressional representation, they’re also older than their predecessors in the Lost, Greatest and Silent generations were when those groups held the most sway on Capitol Hill. When boomers became a plurality of Congress in 2001, their median age was nearly 49, six years older than the Silent Generation was when it became the largest generational cohort in 1979. And while the Silent Generation’s median age was 59 just before the boomers surpassed it in Congress, today the boomers’ median age is a whopping 66. It’s no wonder, then, that Congress is notably older today.”
+
+**In 2001 , Boomers' median age was ~48.6, matching the article’s “nearly 49” claim. In 1979, the Silent Generation’s median age was ~43.1, confirming the article’s note that Boomers were older than their predecessors when gaining power. In 2023, Boomers’ median age is ~66.3, supporting the claim.**
+
+```{r}
+generation_ages <- congress_ages |>
+  filter(generation %in% c("Boomers", "Silent") & congress %in% c(96, 107, 118))
+
+age_by_generation <- generation_ages |>
+  group_by(generation, congress) |>
+  summarize(median_age = median(age_years, na.rm = TRUE), .groups = "drop")
+
+age_by_generation
+```
+
+"Coming up behind the boomers is Gen X, which makes up 36 percent of Congress, and beyond them are millennials (10 percent), who now constitute a larger segment of the overall population than boomers." 
+
+**Gen X makes up ~36% of Congress—accurately reflecting the article’s claim. Millennials make up ~10%—also accurate. Despite Millennials now outnumbering Boomers in the general population, they are still underrepresented in Congress. Boomers continue to dominate, with nearly half of Congress still belonging to that generation.**
+
+```{r}
+
+new_congress <- max(congress_ages$congress, na.rm=TRUE) 
+
+new_congress <- filter(congress_ages, congress==new_congress) 
+
+count_gen <- new_congress |>
+  group_by(generation) |>
+  summarize(count=n(), .groups="drop")
+
+total_congress <- sum(count_gen$count) 
+
+count_gen <- count_gen |> 
+  mutate(percent = round((count/total_congress) * 100, 1))
+
+print(count_gen)
+
+```
+
+
+“While immigration has augmented the population, 76 million boomers were born between 1946 and 1964, far more than the 47 million in the preceding Silent Generation, and greater than the 55 million and 62 million in the subsequent generations of Generation X and millennials, respectively.”
+
+**Boomers had the largest representation in Congress historically, consistent with their large birth cohort (76M). The Silent Generation, while born before boomers, had significantly fewer congressional members, consistent with the national estimate of 47M.Gen X and Millennials are underrepresented in Congress relative to their population sizes (55M and 62M respectively), although their numbers are growing. These findings align with the article’s claim: Congress has historically mirrored the baby boom's dominance in sheer size and influence.**
+```{r}
+
+congress_ages <- congress_ages |>
+  mutate(birth_year = year(ymd(birthday)))
+
+congress_ages <- congress_ages |>
+  mutate(generation_clean = case_when(
+    birth_year >= 1928 & birth_year <= 1945 ~ "Silent",
+    birth_year >= 1946 & birth_year <= 1964 ~ "Boomers",
+    birth_year >= 1965 & birth_year <= 1980 ~ "Gen X",
+    birth_year >= 1981 & birth_year <= 1996 ~ "Millennials",
+    TRUE ~ "Other"
+  ))
+
+gen_birth_counts <- congress_ages |>
+  distinct(bioguide_id, generation_clean) |>
+  count(generation_clean) |>
+  arrange(desc(n))
+
+print(gen_birth_counts)
+
+
+```
+
