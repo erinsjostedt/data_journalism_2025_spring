@@ -165,8 +165,8 @@ library(ggrepel)
 
 ggplot(ballots, aes(x = `total_sent`, y = `total_received`, label = `county_name`)) +
   geom_point(color = "steelblue", size = 3) +
-  geom_text_repel(size = 3, max.overlaps = 30) +
   geom_smooth(method = "lm", se = FALSE, color = "darkred", linetype = "dashed", linewidth = 1) +
+  geom_label_repel(size = 3, max.overlaps = 30, box.padding = 0.25) +
   labs(
     title = "Absentee Ballots Sent vs. Received by County (2024)",
     x = "Total Ballots Sent",
