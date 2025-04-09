@@ -139,7 +139,7 @@ donors |>
 
 * **Analysis summary**: We were able to confirm the findings by first filtering by the dates of the session, which were May 26th to June 29th. We then filtered for donations by Mark R Craig that were equal to $5,200 and went to Berger's committee. This showed that Craig did make a single maximum $5,200 donation to Berger's committee.
 
-For the second part of the sentence, we simply filtered for donations made by Mark R Craig during the dates the session took place during. We then used summarize to get the total sum of his donations. We found that he donated a total of $33,200 during the session, which matched what the article said.
+For the second part of the sentence, we filtered for donations made by Mark R Craig during the dates the session took place during. We then used summarize to get the total sum of his donations. We found that he donated a total of $33,200 during the session, which matched what the article said.
 
 ```{r}
 #vv code for showing Craig made the a maximum donation amount to Berger.
