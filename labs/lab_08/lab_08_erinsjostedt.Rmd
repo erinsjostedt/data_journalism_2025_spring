@@ -58,7 +58,7 @@ ballots_dated <- read_csv("md_absentee_ballots_date.csv") %>%
 -   Good labels for the x & y axis and a caption for the source, which is the Maryland State Board of Elections
 -   Readable bars - the values shouldn't be overlapping
 
-**A1.** 
+**WORCESTER COUNTY** 
 
 ```{r}
 ballots$PERC.RETURNED <- (ballots[["total_received"]] / ballots[["total_sent"]]) * 100
@@ -91,7 +91,7 @@ ggplot(top10, aes(x = reorder(`county_name`, `perc_returned`), y = `perc_returne
 -   Arrange the dataframe to show the counties with the smallest percentage of returned ballots from Democrats first.
 -   Use ggplot to make a horizontal bar chart that shows just the first 10 counties, with the length of the bar determined by the county's percentage of ballots returned by Democrats. Give it an appropriate title, source, and x and y axis titles.
 
-**A2.**
+**carroll, anne arundel, cecil, howard, charles, baltimore county, frederick, PG, montgomery, baltimore city.**
 
 ```{r}
 # Calculate % returned for Democrats and Republicans
@@ -118,7 +118,7 @@ ggplot(bottom10_dems, aes(x = reorder(`county_name`, dem_perc), y = dem_perc)) +
 ```
 **Q3** Let's make a line chart using the second set of absentee ballot data - this one tracking returns by date. We want to see received ballots for Frederick County for Democrats, Republicans and Others, so you'll make a chart with three lines, adding color to each one (you can choose, but choose sensibly). Give the chart a title and good labels. What's the story that this line chart tells? Compare and contrast the three lines. Does it match what you know about absentee voting habits?
 
-**This line chart shows that in the 2024 election** 
+**This line chart shows that in the 2024 election, there were a significant amount more mail in ballots returned for democrats than republicans or any other party. It does match what I already know about absentee voting habits.** 
 
 ```{r}
 ballots_by_date$DATE <- as.Date(ballots_by_date$DATE)
@@ -157,7 +157,7 @@ Follow these steps:
 4. Add a line of fit to the plot using geom_smooth (https://ggplot2.tidyverse.org/reference/geom_smooth.html#ref-examples). Specify the method as lm.
 5. In the answer space below, describe what you see. In a general sense, how would you report out the main point(s) of this chart? Are there counties that seem to be over or under-performing in relation to the overall trend?
 
-**A4.** 
+**I see a scatterplot, but ggrepel gave me the chart in a more clean way where we can see each county name and there are spider chart lines connecting all of the itmes together so each county is visible.** 
 
 ```{r}
 install.packages("ggrepel")
