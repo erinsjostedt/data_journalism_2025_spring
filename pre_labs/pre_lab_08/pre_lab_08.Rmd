@@ -201,6 +201,7 @@ Those axis titles are kind of a mess. Let's change "count" on the x axis to "net
 **Answer** The chart now has an identifying title, names for each axis and a caption that identifies the source of the data.
 
 ```{r}
+
 maryland_top_counties |>
   ggplot() +
   geom_bar(aes(x=reorder(County,UNAF_DIFF), weight=UNAF_DIFF)) +
@@ -257,6 +258,7 @@ We'll put the date on the x axis and total contributions on the y axis.
 **Answer** The results of the code is a basic line craft that measures the number of contributions made per day on the y-axis and the date on the x-axis.
 
 ```{r}
+
 md_winred_by_date |>
   ggplot() + 
   geom_line(aes(x=date, y=total_contributions))
