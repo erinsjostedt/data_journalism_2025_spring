@@ -160,7 +160,7 @@ Follow these steps:
 **I see a scatterplot, but ggrepel gave me the chart in a more clean way where we can see each county name and there are spider chart lines connecting all of the itmes together so each county is visible.** 
 
 ```{r}
-install.packages("ggrepel")
+#install.packages("ggrepel")
 library(ggrepel)
 
 ggplot(ballots, aes(x = `total_sent`, y = `total_received`, label = `county_name`)) +

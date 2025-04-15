@@ -1,5 +1,7 @@
 ---
 title: "Reverse Engineering Project "
+names: Erin Sjostedt, Tariq Jernigan, Zoe Bayewitz, Sandra Smith
+
 output: html_notebook
 ---
 ```{r}
