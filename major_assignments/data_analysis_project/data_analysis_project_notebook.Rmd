@@ -55,12 +55,19 @@ early_voting_turnout <- early_voting_turnout |>
 
 ```
 
-
 ```{r}
 
 write_csv(early_voting_turnout, "data/early_voting.csv", col_names = TRUE)
 
 ```
+
+##final clean data upload
+```{r}
+
+clean_early_voting_turnout <- read_csv("data/clean_early_voting.csv")
+
+```
+
 
 Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
 
