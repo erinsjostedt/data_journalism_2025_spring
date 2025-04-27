@@ -119,24 +119,11 @@ texas_precinct_20 <- texas_precinct_20 |>
 glimpse(texas_precinct_20)
 ```
 
-#clean names - makes all names in a data set use the same format
+#renames the specified column
 ```{r}
-# cleaning function
-cleaned_conowingo <- conowingo |>
-  clean_names()
-
-# display the cleaned dataset
-cleaned_conowingo
-```
-
-#cleans data set, and then renames the specified column
-```{r}
-cleaned_conowingo <- conowingo |>
-  clean_names() |> 
+DATASET |>
   rename(linenumber = x1_linenumber)
 
-# display the cleaned dataset
-cleaned_conowingo
 ```
 
 #find duplicate rows
@@ -150,24 +137,16 @@ cleaned_conowingo |>
 #remove duplicate rows
 ```{r}
 
-# cleaning function
-cleaned_conowingo <- conowingo |>
-  clean_names() |> 
-  rename(linenumber = x1_linenumber) |> 
-  mutate(amount = as.numeric(amount)) |> 
-  distinct()
-  
+cleaned_conowingo |>
 
-# display the cleaned dataset
-cleaned_conowingo
 
 ```
 
 #cleans names, renames a column, transforms "amount" into the <dbl> data type, looks for distinct instances, mutates zip codes into their first 5 digits, and mutates all variables in the "city" column to display in title case.
 
 ```{r}
-# cleaning function
-cleaned_conowingo <- conowingo |>
+# cleaning functions
+cleaned_DATASET <- DATASET |>
   clean_names() |> 
   rename(linenumber = x1_linenumber) |> 
   mutate(amount = as.numeric(amount)) |> 
