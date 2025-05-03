@@ -35,7 +35,6 @@ Let's get to scraping. We'll be working on collecting information about Maryland
 **A1**
 
 ```{r}
-# Step 1: Read the page
 frederick_url <- "https://elections.maryland.gov/elections/2024/general_Results/gen_results_2024_by_county_11.html"
 frederick_page <- read_html(frederick_url)
 
