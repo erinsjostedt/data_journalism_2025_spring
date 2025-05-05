@@ -225,19 +225,55 @@ clean_mail_in_ballots |>
   arrange(desc(oth_rejection_rate))
 ```
 
+Question #4: Which counties had the biggest gaps between eligible voters and early voting turnout?
 
-Question #4: By what percent has overall voter turnout increased or decreased since 2020?
-**Answer: **
+**Answer:The counties with the largest gaps between eligible voters and early votes cast in the 2024 Maryland primary were Montgomery County (660,471), Prince George’s County (521,643), and Baltimore County (419,729). These gaps seem to appear where early voting engagement lacked the most in numbers due to the counties’ high population sizes and differences.**
 ```{r}
 
+early_gap <- clean_early_voting_turnout |>
+  filter(party == "TOTAL") |>
+  group_by(county) |>
+  summarise(
+    early_votes = sum(total, na.rm = TRUE),
+    eligible_actives = sum(eligible_actives, na.rm = TRUE)
+  ) |>
+  mutate(
+    turnout_gap = eligible_actives - early_votes
+  ) |>
+  arrange(desc(turnout_gap))
 
+early_gap
 
 ```
 
 Question #5: Which counties relied most heavily on early voting in 2024?
-**Answer: **
+
+**Answer: the top five counties for early voting in 2024 were Garrett, Queen Anne's, Saint Mary's, Caroline, and Kent. This pattern is interesting because while early voting was utilized across the state, it appears to have been more prominent in smaller counties where mail-in voting may have been less common. I would be interested to look at the root causes of this as well beyond what we can see through data. This alone could be its own story.**
 ```{r}
+early_votes_by_county <- clean_early_voting_turnout |>
+  filter(party == "TOTAL") |>
+  group_by(county) |>
+  summarise(early_votes = sum(total, na.rm = TRUE)) |>
+  mutate(county = str_to_lower(county))
 
+mail_in_votes_by_county <- clean_mail_in_ballots |>
+  filter(county_name != "Total") |>
+  filter(county_name != "All Counties") |>
+  group_by(county_name) |>
+  summarise(mail_in_votes = sum(total_accepted, na.rm = TRUE)) |>
+  mutate(county_name = str_to_lower(county_name))
 
+combined_votes <- early_votes_by_county |>
+  left_join(mail_in_votes_by_county, by = c("county" = "county_name"))
+
+combined_votes <- combined_votes |>
+  mutate(mail_in_votes = replace_na(mail_in_votes, 0)) |>
+  mutate(total_votes = early_votes + mail_in_votes)
+
+combined_votes <- combined_votes |>
+  mutate(early_vote_percent = (early_votes / total_votes) * 100) |>
+  arrange(desc(early_vote_percent))
+
+combined_votes
 
 ```
