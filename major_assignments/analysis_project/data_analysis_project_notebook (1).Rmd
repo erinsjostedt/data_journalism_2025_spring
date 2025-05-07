@@ -48,28 +48,26 @@ mail_in_ballots <- read.csv("data/mail_in_ballots.csv")
 
 ```
 
-#cleaning dataset ONE via coding to fix column names, then exporting the dataset to excel to add missing variables (county names)
-```{r}
+#cleaning dataset ONE via coding to fix column names, then exporting the dataset to excel to add missing variables (county 
+names
+```{r error = TRUE}
+#this r markdown is what we talked about in class because of the dataset being overwritten previously, we have the cleaned data but you said we could use this markdown instead of having to re-use tabula and do it all again. Thanks!
 
 early_voting_turnout <- early_voting_turnout |>
   clean_names() |>
   mutate(across(starts_with("day"), ~gsub(",", "", .) %>% as.numeric)) |>
   mutate(across(starts_with("x_"), ~gsub("%", "", .))) |>
-  rename(perc_day1 = x_day1,
-         perc_day2 = x_day2,
-         perc_day3 = x_day3,
-         perc_day4 = x_day4,
-         perc_day5 = x_day5,
-         perc_day6 = x_day6,
-         perc_day7 = x_day7,
-         perc_day8 = x_day8,
-         perc_total = x_total)
-  
- 
-```
-
-##oops more cleaning
-```{r}
+  rename(
+    perc_day1 = x_day1,
+    perc_day2 = x_day2,
+    perc_day3 = x_day3,
+    perc_day4 = x_day4,
+    perc_day5 = x_day5,
+    perc_day6 = x_day6,
+    perc_day7 = x_day7,
+    perc_day8 = x_day8,
+    perc_total = x_total
+  )
 
 early_voting_turnout <- early_voting_turnout |>
   mutate(across(starts_with("perc_"), ~gsub("%", "", .))) |>
@@ -78,20 +76,10 @@ early_voting_turnout <- early_voting_turnout |>
   mutate(eligible_actives = str_remove(eligible_actives, ",")) |>
   mutate(eligible_actives = as.numeric(eligible_actives))
 
+early_voting_turnout <- early_voting_turnout |> clean_names()
+colnames(early_voting_turnout)
 ```
 
-```{r}
-
-write_csv(early_voting_turnout, "data/early_voting.csv", col_names = TRUE)
-
-```
-
-##final clean data reupload
-```{r}
-
-clean_early_voting_turnout <- read_csv("data/clean_early_voting.csv")
-
-```
 
 ##cleaning of dataset TWO
 ```{r}
@@ -115,24 +103,15 @@ mail_in_ballots <- mail_in_ballots |>
   mutate(total_received = as.numeric(total_received)) |>
   mutate(total_accepted = as.numeric(total_accepted))
   
-
-```
-
-##writing the changes to the dataset file, then exporting to excel to get rid of empty rows
-```{r}
-
-write_csv(mail_in_ballots, "data/mail_in_ballots.csv", col_names = TRUE)
-
-```
-
-```{r}
-
-clean_mail_in_ballots <- read_csv("clean_mail_in_ballots.csv")
-clean_early_voting_turnout <- read_csv("clean_early_voting.csv")
-
 ```
 
 **Week 3 Code**
+
+```{r}
+clean_early_voting_turnout <- read.csv("data/clean_early_voting.csv")
+clean_mail_in_ballots <- read.csv("data/clean_mail_in_ballots.csv")
+```
+
 
 Question #1: Which counties had the highest and lowest early voting turnout rates in 2024?
 
