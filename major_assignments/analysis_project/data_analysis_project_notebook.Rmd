@@ -28,12 +28,12 @@ The preview shows you a rendered HTML copy of the contents of the editor. Conseq
 
 
 **Week 2 Analysis**
-The early voting dataset has 168 rows and 21 columns, showing early votes cast by county and party for Maryland’s 2024 primary. There are no missing values, but to answer some countywide questions, we had to combine the party-level results. The dataset only covers early voting across an eight-day period — it doesn’t include mail-in ballots, Election Day voting, or provisional ballots. That limits how much we can say about overall turnout or voting method trends without pulling in more data.
+The early voting dataset has 168 rows and 21 columns, showing early votes cast by county and party for Maryland’s 2024 primary. There are no missing values, but to answer some countywide questions, we had to combine the party-level results. The dataset only covers early voting across an eight-day period — it doesn’t include mail-in ballots, Election Day voting, or provisional ballots. As a result, the dataset offers only a partial view of overall turnout and voting method trends, and requires additional sources for a more in-depth analysis.
 
 Column names like party (DEM, REP, LIB, NLM, OTH) identify different political parties, though the file doesn’t define them directly. We matched these using Maryland’s election documentation. The eligible_actives column shows the number of registered active voters, but there’s no demographic breakdown. Overall, the data works well for tracking early voting by county but doesn’t stand alone for broader turnout or mail-in ballot analysis.
 
 
-The mail-in ballots dataset has 482 rows and 15 columns, tracking ballots sent, received, and accepted across counties and districts in Maryland's 2024 primary. There are minor missing values: three missing county and district names, and one missing total in the total_accepted column. To answer countywide questions, we would need to combine rows by county, since ballots are also broken down by voting district.
+The mail-in ballots dataset has 482 rows and 15 columns, tracking ballots sent, received, and accepted across counties and districts in Maryland's 2024 primary. Minor gaps include missing values for three counties/districts and one missing total in the total_accepted column, which could slightly affect accuracy. To answer countywide questions, we would need to combine rows by county, since ballots are also broken down by voting district.
 
 The dataset focuses only on mail-in ballots. It does not include early voting, Election Day turnout, or provisional ballots. This limits its ability to explain full voter participation or ballot method choices without additional datasets.
 
@@ -48,28 +48,26 @@ mail_in_ballots <- read.csv("data/mail_in_ballots.csv")
 
 ```
 
-#cleaning dataset ONE via coding to fix column names, then exporting the dataset to excel to add missing variables (county names)
-```{r}
+#cleaning dataset ONE via coding to fix column names, then exporting the dataset to excel to add missing variables (county 
+names
+```{r error = TRUE}
+#this r markdown is what we talked about in class because of the dataset being overwritten previously, we have the cleaned data but you said we could use this markdown instead of having to re-use tabula and do it all again. Thanks!
 
 early_voting_turnout <- early_voting_turnout |>
   clean_names() |>
   mutate(across(starts_with("day"), ~gsub(",", "", .) %>% as.numeric)) |>
   mutate(across(starts_with("x_"), ~gsub("%", "", .))) |>
-  rename(perc_day1 = x_day1,
-         perc_day2 = x_day2,
-         perc_day3 = x_day3,
-         perc_day4 = x_day4,
-         perc_day5 = x_day5,
-         perc_day6 = x_day6,
-         perc_day7 = x_day7,
-         perc_day8 = x_day8,
-         perc_total = x_total)
-  
- 
-```
-
-##oops more cleaning
-```{r}
+  rename(
+    perc_day1 = x_day1,
+    perc_day2 = x_day2,
+    perc_day3 = x_day3,
+    perc_day4 = x_day4,
+    perc_day5 = x_day5,
+    perc_day6 = x_day6,
+    perc_day7 = x_day7,
+    perc_day8 = x_day8,
+    perc_total = x_total
+  )
 
 early_voting_turnout <- early_voting_turnout |>
   mutate(across(starts_with("perc_"), ~gsub("%", "", .))) |>
@@ -78,20 +76,10 @@ early_voting_turnout <- early_voting_turnout |>
   mutate(eligible_actives = str_remove(eligible_actives, ",")) |>
   mutate(eligible_actives = as.numeric(eligible_actives))
 
+early_voting_turnout <- early_voting_turnout |> clean_names()
+colnames(early_voting_turnout)
 ```
 
-```{r}
-
-write_csv(early_voting_turnout, "data/early_voting.csv", col_names = TRUE)
-
-```
-
-##final clean data reupload
-```{r}
-
-clean_early_voting_turnout <- read_csv("data/clean_early_voting.csv")
-
-```
 
 ##cleaning of dataset TWO
 ```{r}
@@ -115,35 +103,156 @@ mail_in_ballots <- mail_in_ballots |>
   mutate(total_received = as.numeric(total_received)) |>
   mutate(total_accepted = as.numeric(total_accepted))
   
-
 ```
 
-##writing the changes to the dataset file, then exporting to excel to get rid of empty rows
+**Week 3 Code**
+
 ```{r}
-
-write_csv(mail_in_ballots, "data/mail_in_ballots.csv", col_names = TRUE)
-
+clean_early_voting_turnout <- read.csv("data/clean_early_voting.csv")
+clean_mail_in_ballots <- read.csv("data/clean_mail_in_ballots.csv")
 ```
 
+
+Question #1: Which counties had the highest and lowest early voting turnout rates in 2024?
+
+**Answer: In the 2024 Maryland election, Kent County had the highest early voting turnout rate, with approximately 7.08% of eligible active voters casting early ballots. Frederick County had the lowest early voting turnout rate at just 2.8%.**
 ```{r}
 
-clean_mail_in_ballots <- read_csv("data/clean_mail_in_ballots.csv")
-
-```
-
-```{r}
-early_voting_summary <- clean_early_voting_turnout |>
+clean_early_voting_turnout |>
+  filter(party == "TOTAL") |>
   group_by(county) |>
   summarise(
     total_early_votes = sum(total, na.rm = TRUE),
-    eligible_voters = sum(eligible_actives, na.rm = TRUE)
+    eligible_actives = sum(eligible_actives, na.rm = TRUE)
   ) |>
   mutate(
-    turnout_percent = (total_early_votes / eligible_voters) * 100
+    early_turnout_rate = (total_early_votes / eligible_actives) * 100
   ) |>
-  arrange(desc(turnout_percent))
+  arrange(desc(early_turnout_rate))
 
-early_voting_summary
 
 ```
 
+```{r}
+
+clean_early_voting_turnout |>
+  select(county, total, party) |>
+  filter(party == "TOTAL") |>
+    group_by(county) |>
+    summarise(total) |>
+    arrange(total)
+
+```
+
+Question #2: For the county with the most early votes, which days had the highest and lowest total number of early votes? What is the percentage difference between these days?
+
+**Answer: Prince George’s County had the most early votes overall. Day 8, the last day of early voting, had the highest turnout with 6,338 votes. Day 3 had the lowest, with just 1,154 votes. The big difference here is suggestive that a lot of voters waited until the very end to cast their ballots. Further analysis for someone making this an actual story may look into the causes for this change by the last day, whether it be work schedules, preference, etc.**
+```{r}
+
+clean_early_voting_turnout |>
+  select(county, party, day1, day2, day3, day4, day5, day6, day7, day8, total) |>
+  filter(county == "Prince Georges", party == "TOTAL") |>
+  group_by(county) |>
+  summarise(across(starts_with("day"), sum, na.rm = TRUE)) |>
+  pivot_longer(cols = starts_with("day"), names_to = "day", values_to = "votes") |>
+  arrange(desc(votes))
+
+```
+
+
+Question #3: Which counties had the highest mail-in ballot rejection rates for Democratic, Republican, and Other party voters in the 2024 election?*
+
+**Answer: In the 2024 Maryland election, Calvert County had the highest mail-in ballot rejection rate for Democratic voters at approximately 1.06%. Among Republican voters, Baltimore City recorded the highest rejection rate at about 1.41%. For voters registered with other parties, Dorchester County reported the highest rejection rate at roughly 4.65%. These results reveal that mail-in ballot rejection rates varied significantly by both county and party affiliation. It would be interesting to look at the history of each of these counties in a separate analysis to see if their results in this election differ from those prior.*
+```{r}
+#DEMOCRATIC
+clean_mail_in_ballots |>
+  filter(!str_detect(county_name, "total|all")) |>
+  group_by(county_name) |>
+  summarise(
+    dem_received = sum(dem_received, na.rm = TRUE),
+    dem_accepted = sum(dem_accepted, na.rm = TRUE)
+  ) |>
+  mutate(
+    dem_rejection_rate = ((dem_received - dem_accepted) / dem_received) * 100
+  ) |>
+  arrange(desc(dem_rejection_rate))
+
+#REPUBLICAN
+clean_mail_in_ballots |>
+  filter(!str_detect(county_name, "total|all")) |>
+  group_by(county_name) |>
+  summarise(
+    rep_received = sum(rep_received, na.rm = TRUE),
+    rep_accepted = sum(rep_accepted, na.rm = TRUE)
+  ) |>
+  mutate(
+    rep_rejection_rate = ((rep_received - rep_accepted) / rep_received) * 100
+  ) |>
+  arrange(desc(rep_rejection_rate))
+  
+#OTHER
+clean_mail_in_ballots |>
+  filter(!str_detect(county_name, "total|all")) |>
+  group_by(county_name) |>
+  summarise(
+    oth_received = sum(oth_received, na.rm = TRUE),
+    oth_accepted = sum(oth_accepted, na.rm = TRUE)
+  ) |>
+  mutate(
+    oth_rejection_rate = ((oth_received - oth_accepted) / oth_received) * 100
+  ) |>
+  arrange(desc(oth_rejection_rate))
+```
+
+Question #4: Which counties had the biggest gaps between eligible voters and early voting turnout?
+
+**Answer:The counties with the largest gaps between eligible voters and early votes cast in the 2024 Maryland primary were Montgomery County (660,471), Prince George’s County (521,643), and Baltimore County (419,729). These turnout gaps were largest in the counties with higher populations, which tells us that size alone may not be enough to guarantee high early voting turnout The reasons behind lower turnout may relate to other factors like voter preferences, campaigning effectiveness, or belief in early voting systems accuracy/reliability.**
+```{r}
+
+early_gap <- clean_early_voting_turnout |>
+  filter(party == "TOTAL") |>
+  group_by(county) |>
+  summarise(
+    early_votes = sum(total, na.rm = TRUE),
+    eligible_actives = sum(eligible_actives, na.rm = TRUE)
+  ) |>
+  mutate(
+    turnout_gap = eligible_actives - early_votes
+  ) |>
+  arrange(desc(turnout_gap))
+
+early_gap
+
+```
+
+Question #5: Which counties relied most heavily on early voting in 2024?
+
+**Answer: The top five counties for early voting in 2024 were Garrett, Queen Anne's, Saint Mary's, Caroline, and Kent. This pattern is interesting because while early voting was utilized across the state, it appears to have been more widely utilized in smaller counties where mail-in voting may have been less popular. We would be interested to look at the root causes of this as well beyond what we can see through data.**
+```{r}
+early_votes_by_county <- clean_early_voting_turnout |>
+  filter(party == "TOTAL") |>
+  group_by(county) |>
+  summarise(early_votes = sum(total, na.rm = TRUE)) |>
+  mutate(county = str_to_lower(county))
+
+mail_in_votes_by_county <- clean_mail_in_ballots |>
+  filter(county_name != "Total") |>
+  filter(county_name != "All Counties") |>
+  group_by(county_name) |>
+  summarise(mail_in_votes = sum(total_accepted, na.rm = TRUE)) |>
+  mutate(county_name = str_to_lower(county_name))
+
+combined_votes <- early_votes_by_county |>
+  left_join(mail_in_votes_by_county, by = c("county" = "county_name"))
+
+combined_votes <- combined_votes |>
+  mutate(mail_in_votes = replace_na(mail_in_votes, 0)) |>
+  mutate(total_votes = early_votes + mail_in_votes)
+
+combined_votes <- combined_votes |>
+  mutate(early_vote_percent = (early_votes / total_votes) * 100) |>
+  arrange(desc(early_vote_percent))
+
+combined_votes
+
+```
